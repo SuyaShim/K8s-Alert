@@ -1,0 +1,33 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: alertmanager-config
+  namespace: monitoring
+spec:
+  route:
+    receiver: 'slack'
+    groupBy: ['alertname', 'severity']
+  receivers:
+    - name: 'slack'
+      slackConfigs:
+        - channel: '#prometheus' 
+          apiURL:
+            name: 'slack-webhook'
+            key: 'webhookURL'
+          title: "{{ .CommonAnnotations.summary }}"
+          text: |
+            {{- if eq .CommonLabels.groupName "pod" }}
+              {{ template "podTemplate" . }}
+            {{- else if eq .CommonLabels.groupName "node" }}
+              {{ template "nodeTemplate" . }}
+            {{- else if eq .CommonLabels.groupName "job" }}
+              {{ template "jobTemplate" . }}
+            {{- else if eq .CommonLabels.groupName "statefulset" }}
+              {{ template "statefulsetTemplate" . }}
+            {{- else if eq .CommonLabels.groupName "hpa" }}
+              {{ template "hpaTemplate" . }}
+            {{- else if eq .CommonLabels.groupName "pvc" }}
+              {{ template "pvcTemplate" . }}
+            {{- else }}
+              {{ template "defaultTemplate" . }}
+            {{- end }}

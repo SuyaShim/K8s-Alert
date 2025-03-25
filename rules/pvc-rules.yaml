@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: pvc.rules
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+    - name: pvc
+      rules:
+        - alert: PVC:Pending:WARN
+          expr: kube_persistentvolumeclaim_status_phase{phase="Pending"} == 1
+          for: 2m
+          labels:
+            severity: warning
+            groupName: pvc
+          annotations:
+            summary: "PersistentVolumeClaim is pending more than 2 minutes"
+            description: "PVC {{ $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }} is pending more than 2 minutes."

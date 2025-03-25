@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: job.rules
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+    - name: job
+      rules:
+        - alert: Job:NotStarting:WARN
+          expr: kube_job_status_active == 0 and kube_job_status_failed == 0 and kube_job_status_succeeded == 0 and (time() - kube_job_status_start_time) > 600
+          labels:
+            severity: warning 
+            groupName: job
+          annotations:
+            summary: "Job not started within 10 minutes"
+            description: "Job {{ $labels.job_name }} in Namespace {{ $labels.namespace }} has not started for more than 10 minutes."

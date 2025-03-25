@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-templates
+  namespace: monitoring
+data:
+  default-template.tmpl: |
+    {{ define "defaultTemplate" }}
+      {{ if .CommonAnnotations.runbook_url }}
+        📚 Runbook: {{ .CommonAnnotations.runbook_url }}
+      {{ end }}
+      {{ range .Alerts }}
+        🚨 Description: {{ .Annotations.description }}
+        🕐 Time: {{ .StartsAt }}
+      {{ end }}
+    {{ end }}
+  pod-template.tmpl: |
+    {{ define "podTemplate" }}
+      📚 Runbook: https://goorm.notion.site/SRE-Prometheus-Runbook-1bc4e6997fb080fe87dbd4a82033f8ef?pvs=4
+      {{ range .Alerts }}
+        🚨 Namespace: {{ .Labels.namespace }}
+        🚨 Pod(Container): {{ .Labels.pod }}({{ .Labels.container }})
+        🕐 Time: {{ .StartsAt }}
+      {{ end }}
+    {{ end }}
+  node-template.tmpl: |
+      {{ define "nodeTemplate" }}
+        📚 Runbook: https://goorm.notion.site/SRE-Prometheus-Runbook-1bc4e6997fb080fe87dbd4a82033f8ef?pvs=4
+        {{ range .Alerts }}
+          🚨 Node(Instance): {{ .Labels.node }}({{ .Labels.instance }})
+          🕐 Time: {{ .StartsAt }}
+        {{ end }}
+      {{ end }}
+  job-template.tmpl: |
+    {{ define "jobTemplate" }}
+        📚 Runbook: https://goorm.notion.site/SRE-Prometheus-Runbook-1bc4e6997fb080fe87dbd4a82033f8ef?pvs=4
+        {{ range .Alerts }}
+          🚨 Namespace: {{ .Labels.namespace }}
+          🚨 Job Name: {{ .Labels.job_name }}
+          🕐 Time: {{ .StartsAt }}
+        {{ end }}
+      {{ end }}
+  statefulset-template.tmpl: |
+    {{ define "statefulsetTemplate" }}
+        📚 Runbook: https://goorm.notion.site/SRE-Prometheus-Runbook-1bc4e6997fb080fe87dbd4a82033f8ef?pvs=4
+        {{ range .Alerts }}
+          🚨 Namespace: {{ .Labels.namespace }}
+          🚨 StatefulSet Name: {{ .Labels.statefulset }}
+          🕐 Time: {{ .StartsAt }}
+        {{ end }}
+    {{ end }}
+  hpa-template.tmpl: |
+    {{ define "hpaTemplate" }}
+        📚 Runbook: https://goorm.notion.site/SRE-Prometheus-Runbook-1bc4e6997fb080fe87dbd4a82033f8ef?pvs=4
+        {{ range .Alerts }}
+          🚨 Namespace: {{ .Labels.namespace }}
+          🚨 HPA Name: {{ .Labels.horizontalpodautoscaler }}
+          🕐 Time: {{ .StartsAt }}
+        {{ end }}
+    {{ end }}
+  pvc-template.tmpl: |
+    {{ define "pvcTemplate" }}
+        📚 Runbook: https://goorm.notion.site/SRE-Prometheus-Runbook-1bc4e6997fb080fe87dbd4a82033f8ef?pvs=4
+        {{ range .Alerts }}
+          🚨 Namespace: {{ .Labels.namespace }}
+          🚨 PVC Name: {{ .Labels.persistentvolumeclaim }}
+          🕐 Time: {{ .StartsAt }}
+        {{ end }}
+    {{ end }}

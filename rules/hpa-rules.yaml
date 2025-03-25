@@ -1,0 +1,28 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: hpa.rules
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+    - name: hpa
+      rules:
+        - alert: HPA:ScaleInability:WARN
+          expr: (kube_horizontalpodautoscaler_spec_max_replicas - kube_horizontalpodautoscaler_status_desired_replicas) * on (horizontalpodautoscaler,namespace)(kube_horizontalpodautoscaler_status_condition{condition="ScalingLimited", status="true"} == 1) == 0
+          for: 2m
+          labels:
+            severity: warning
+            groupName: hpa
+          annotations:
+            summary: "HPA scale inability more than 2 minutes"
+            description: "HPA {{ $labels.horizontalpodautoscaler }} in Namespace {{ $labels.namespace }} is unable to scale more than 2 minutes."
+        - alert: HPA:Unavailability:WARN
+          expr: kube_horizontalpodautoscaler_status_condition{status="false", condition="ScalingActive"} == 1
+          labels:
+            severity: warning
+            groupName: hpa
+          annotations:
+            summary: "HPA status unavailability"
+            description: "HPA {{ $labels.horizontalpodautoscaler }} in Namespace {{ $labels.namespace }} is unable to scale pods."

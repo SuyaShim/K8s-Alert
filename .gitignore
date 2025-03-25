@@ -1,0 +1,10 @@
+kube-stack-values.yaml
+prometheus-crd.yaml
+
+blackbox/blackbox-values.yaml
+
+alertmanager/slack-webhook-secret.yaml
+
+server/venv/
+
+.DS_Store

@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: statefulset.rules
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+    - name: statefulset
+      rules:
+        - alert: StatefulSet:StatefulSetDown:FATAL
+          expr: kube_statefulset_replicas != kube_statefulset_status_replicas_ready > 0
+          for: 1m
+          labels:
+            severity: critical 
+            groupName: statefulset
+          annotations:
+            summary: "StatefulSet went down more than 1 minutes"
+            description: "StatefulSet {{ $labels.statefulset }} in Namespace {{ $labels.namespace }} has a mismatch between desired and ready replicas more than 1 minutes."

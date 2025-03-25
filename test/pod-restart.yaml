@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: restart-pod
+  namespace: user
+  labels:
+    env: test
+spec:
+  containers:
+  - name: restart-container
+    image: k8s.gcr.io/pause
+    command:
+      - "/bin/sh"
+      - "-c"
+      - "exit 1"
+  restartPolicy: Always

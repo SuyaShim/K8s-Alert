@@ -1,0 +1,42 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: blackbox-exporter.rules
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+    - name: blackbox-exporter
+      rules:
+        - alert: BlackboxExporterDown
+          expr: up{job="blackbox-exporter"} == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Blackbox exporter is down"
+            description: "Blackbox exporter for target {{ $labels.instance }} has not been able to monitor the target for more than 5 minutes."
+        - alert: BlackboxProbeFailed
+          expr: probe_success == 0
+          labels:
+            severity: critical
+          annotations:
+            summary: "Blackbox probe failed"
+            description: "Blackbox probe for target {{ $labels.instance }} failed."
+        - alert: BlackboxProbeSlow
+          expr: avg_over_time(probe_duration_seconds[1m]) > 1
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Blackbox slow probe"
+            description: "Blackbox probe for target {{ $labels.instance }} took more than 1s to complete."
+        - alert: BlackboxProbeTimeout
+          expr: probe_duration_seconds> 5
+          labels:
+            severity: warning
+          annotations:
+            summary: "Blackbox probe timeout"
+            description: "Blackbox probe for {{ $labels.instance }} has been timing out (longer than 5 seconds)"
+

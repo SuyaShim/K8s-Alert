@@ -1,0 +1,31 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: alertmanager
+  namespace: monitoring
+spec:
+  replicas: 1
+  alertmanagerConfiguration:
+    name: alertmanager-config
+    templates:
+      - configMap:
+          name: alertmanager-templates
+          key: pod-template.tmpl
+      - configMap:
+          name: alertmanager-templates
+          key: default-template.tmpl
+      - configMap:
+          name: alertmanager-templates
+          key: node-template.tmpl
+      - configMap:
+          name: alertmanager-templates
+          key: job-template.tmpl
+      - configMap:
+          name: alertmanager-templates
+          key: statefulset-template.tmpl
+      - configMap:
+          name: alertmanager-templates
+          key: hpa-template.tmpl
+      - configMap:
+          name: alertmanager-templates
+          key: pvc-template.tmpl

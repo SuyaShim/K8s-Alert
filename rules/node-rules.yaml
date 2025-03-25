@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node.rules
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+    - name: node
+      rules:
+        - alert: Node:MemoryPressure:FATAL
+          expr: kube_node_status_condition{condition="MemoryPressure",status="true"} == 1
+          for: 2m
+          labels:
+            severity: critical
+            groupName: node
+          annotations:
+            summary: "Node Memory Pressure more than 2 minutes"
+            description: "Node {{ $labels.node }} has MemoryPressure condition for more than 2 minutes."
+        - alert: Node:DiskPressure:FATAL
+          expr: kube_node_status_condition{condition="DiskPressure",status="true"} == 1
+          for: 2m
+          labels:
+            severity: critical
+            groupName: node
+          annotations:
+            summary: "Node Disk Pressure more than 2 minutes"
+            description: "Node {{ $labels.node }} has DiskPressure condition for more than 2 minutes."
+        - alert: Node:NetworkUnavailable:FATAL
+          expr: kube_node_status_condition{condition="NetworkUnavailable",status="true"} == 1
+          for: 2m
+          labels:
+            severity: critical
+            groupName: node
+          annotations:
+            summary: "Node Network Unavailable more than 2 minutes"
+            description: "Node {{ $labels.node }} has NetworkUnavailable  condition for more than 2 minutes."
+
